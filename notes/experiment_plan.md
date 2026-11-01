@@ -1,5 +1,7 @@
 # Experiment design and theoretical predictions
 
+> Historical pre-computation plan (October 2026). Its separate E0/error/cost sections are superseded by the approved two-model/two-method structure in [code_guide.md](code_guide.md). Predictions below are preserved, not retrospectively rewritten. Actual outputs are in data/ and notes/evidence/numerical_results.md.
+
 **Proposed title: Reliable heat flow through heterogeneous materials: accuracy, interface physics, and computational cost.**
 
 This document plans experiments; no predicted slope, timing, error, or solver advantage below is a measured project result. Complete the prediction/output/reconciliation record before accepting each future experiment.

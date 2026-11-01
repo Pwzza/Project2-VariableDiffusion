@@ -1,5 +1,11 @@
 # Prediction, audit and reproduction records
 
+## Implementation update — 2026-11-01
+
+AI assistance implemented new smooth/layered model functions, conservative FDM, scikit-fem P1 FEM, physical norms/flux diagnostics, experiment drivers, figure generation and numerical tests. The course scaffolds informed the structure; course check scripts remain unchanged. Human review/sign-off is pending and no individual contributions are invented.
+
+Validation: independent numerical divergence of analytic flux checks forcing; hand-derived small matrices check both assembly pathways; contrast/boundary, convergence and interface tests exercise the predictions. A test caught and corrected an initial residual-correction field construction error. Final automated checks and measured fits are generated in notes/evidence/numerical_results.md and data/checks.json. The current guide is code_guide.md. The original predictions/audit table below is preserved as history; its pending statuses refer to the October setup stage.
+
 ## Current status
 
 This setup-stage repository includes AI-assisted planning and an environment runner. The two course numerical checks are copied unchanged with attribution. No project variable-diffusion solver or claimed experimental result has yet been generated. The design's mathematical predictions are reasoned derivations for team review; they do not replace independent ownership or validation.

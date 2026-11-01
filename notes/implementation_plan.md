@@ -1,5 +1,7 @@
 # What to build next
 
+> Historical specification. Implementation has since been completed for the core FDM/FEM experiments; use [code_guide.md](code_guide.md) for current modules, scope, commands and limitations. Statements below about unimplemented solvers describe the original planning stage.
+
 Status: implementation specification. Only the environment driver and supplied setup checks currently exist. Do not confuse the module names below with delivered numerical solvers.
 
 ## Build order and interfaces

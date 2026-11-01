@@ -1,0 +1,57 @@
+[
+  {
+    "method": "fdm_arithmetic",
+    "norm": "l2",
+    "order": 1.9998940295319896,
+    "fit_N": [
+      32,
+      64,
+      128
+    ],
+    "max_log_deviation": 2.9383226189949596e-05
+  },
+  {
+    "method": "fdm_arithmetic",
+    "norm": "nodal_linf",
+    "order": 1.999842263689204,
+    "fit_N": [
+      32,
+      64,
+      128
+    ],
+    "max_log_deviation": 0.0001351826422695268
+  },
+  {
+    "method": "fem_fitted",
+    "norm": "l2",
+    "order": 1.9989777614241209,
+    "fit_N": [
+      32,
+      64,
+      128
+    ],
+    "max_log_deviation": 0.00028313973999161135
+  },
+  {
+    "method": "fem_fitted",
+    "norm": "nodal_linf",
+    "order": 1.9993930058737692,
+    "fit_N": [
+      32,
+      64,
+      128
+    ],
+    "max_log_deviation": 7.229374316608528e-05
+  },
+  {
+    "method": "fem_fitted",
+    "norm": "energy",
+    "order": 0.9995644766732522,
+    "fit_N": [
+      32,
+      64,
+      128
+    ],
+    "max_log_deviation": 0.00012071385434708759
+  }
+]

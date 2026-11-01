@@ -1,0 +1,53 @@
+{
+  "forcing": {
+    "method": "centered numerical divergence of analytic flux",
+    "step": 1e-05,
+    "maximum_absolute_defect": 5.578360884328504e-09,
+    "threshold": 1e-07
+  },
+  "quadrature": {
+    "N": 128,
+    "orders": [
+      6,
+      8
+    ],
+    "solution_difference_l2": 3.376999361612312e-14,
+    "difference_to_discretization_ratio": 4.013297551230713e-10
+  },
+  "smallest_eigenvalues": [
+    {
+      "model": "smooth",
+      "method": "fdm_resistance",
+      "N": 15,
+      "value": 28.595135687751252
+    },
+    {
+      "model": "smooth",
+      "method": "fem_fitted",
+      "N": 15,
+      "value": 0.127089491945562
+    },
+    {
+      "model": "layered",
+      "method": "fdm_resistance",
+      "N": 15,
+      "value": 43.839113345784455
+    },
+    {
+      "model": "layered",
+      "method": "fem_fitted",
+      "N": 15,
+      "value": 0.192661279908197
+    }
+  ],
+  "acceptance": {
+    "smooth_l2_orders": true,
+    "smooth_algebraic_separation": true,
+    "quadrature_separation": true,
+    "symmetric": true,
+    "positive_eigenvalues": true,
+    "layered_exact_nodes": true,
+    "layered_exact_flux": true,
+    "layered_bounds": true
+  }
+}

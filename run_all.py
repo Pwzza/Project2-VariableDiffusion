@@ -1,4 +1,4 @@
-"""Setup-stage entry point. No project experiment results exist yet."""
+"""One-command numerical experiments and presentation figure reproduction."""
 from pathlib import Path
 import argparse
 import contextlib
@@ -9,6 +9,7 @@ import runpy
 import sys
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / 'code'))
 
 
 def setup_checks():
@@ -35,7 +36,15 @@ def setup_checks():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--setup-only', action='store_true', help='run the supplied environment checks')
+    parser.add_argument('--quick', action='store_true', help='four smaller meshes for development; not final evidence')
+    parser.add_argument('--plots-only', action='store_true', help='regenerate figures from existing data')
     args = parser.parse_args()
-    setup_checks()
-    if not args.setup_only:
-        print('PLANNED: E0-E5 figure/table generation is not implemented. See notes/implementation_plan.md.')
+    if args.setup_only:
+        setup_checks()
+    else:
+        from diffusion.experiments import run
+        from diffusion.plots import generate
+        if not args.plots_only:
+            run(ROOT, quick=args.quick)
+        generate(ROOT)
+        print('Done: numerical data in data/ and presentation figures in figures/.')

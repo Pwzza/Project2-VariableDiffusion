@@ -1,5 +1,7 @@
 # Requirements, sources and planned evidence
 
+> Historical requirements mapping. Current implemented evidence and precise limitations are documented in [code_guide.md](code_guide.md), data/checks.json and notes/evidence/numerical_results.md. Final report/slides and human course submissions remain pending.
+
 Local sources reviewed on 2026-10-22; source pages below refer to PDF page numbering. Paths are relative to the parent of this repository unless otherwise stated.
 
 | Source | Requirement/inspiration | Implementation or planned evidence |

@@ -4,7 +4,9 @@
 
 The proposed story is: **Can a computed temperature field be accurate, physically conservative, and affordable?** Verify smooth accuracy first; expose wrong interface physics next; then compare solver cost only after algebraic error is controlled.
 
-This repository currently contains the experiment design, theoretical predictions, implementation specification, and a verified course environment. The project experiments and final report/slides are planned work, not completed results.
+The numerical code now implements **both conservative FDM and two-dimensional P1 FEM**, four-mesh smooth/interface experiments, diagnostics, and reproducible presentation figures. The final report and Beamer slides are not assembled yet.
+
+**Start with [the current code guide](notes/code_guide.md).** The October planning documents linked below preserve the original design; their standalone sanity/error/cost experiment numbering and FDM-only emphasis have been superseded by the approved two-model, two-method presentation plan.
 
 - [Experiment design and theory](notes/experiment_plan.md)
 - [Problem definition and conventions](notes/problem_definition.md)
@@ -16,7 +18,7 @@ This repository currently contains the experiment design, theoretical prediction
 
 ## Environment
 
-Python 3.12; NumPy, SciPy, Matplotlib, ipykernel, scikit-fem, and PyAMG. The last two are required for everyone's FEM training even though this project's primary method is FDM.
+Python 3.12; NumPy, SciPy, Matplotlib, ipykernel, scikit-fem, and PyAMG. scikit-fem implements the project's 2D P1 FEM pathway. PyAMG is available for optional future work; the current iteration comparison uses unpreconditioned CG.
 
 Windows PowerShell, from this directory:
 
@@ -28,20 +30,27 @@ py -3.12 -m venv .venv
 
 For an intentional dependency upgrade use `requirements.txt`, rerun the checks, and regenerate the lock with `python -m pip freeze`. The lock records the supplied environment plus the two added course packages. The `.venv` is local and excluded from Git; teammates recreate it using the lock. VS Code selects `.venv/Scripts/python.exe`.
 
-`run_all.py` currently runs **environment checks only**, writes actual evidence, and explicitly reports that experiment generation is not implemented. Once the modules in the implementation plan are built, extend it into the brief's one-command figure/table reproduction entry point. Do not submit this setup-stage repository as a completed numerical project.
+Run from this directory (no activation needed):
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe run_all.py
+```
+
+The default command runs the full four-mesh experiments, checks acceptance criteria, and writes JSON/CSV/NPZ data plus PDF/PNG figures. `--quick` uses smaller four-mesh studies for development. It overwrites the same output names: regenerate with the default command before using final figures. `--plots-only` redraws figures from saved data. `--setup-only` retains the original course environment checks.
 
 ## Layout
 
 ```text
-code/                  future project solver and experiment modules
+code/diffusion/        models, sparse solvers, diagnostics, experiments, plots
   course_checks/       two unchanged supplied environment-check scripts
-data/                  generated numerical tables and metadata
+data/                  generated tables, fields, profiles, checks and metadata
 figures/               generated publication figures
 notes/                 design, derivations, predictions, audit and evidence
 report/                future LaTeX report and PDF (at least 8 pages)
-slides/                future presentation source and PDF (10 minutes + Q&A)
-tests/                 future matrix, boundary, flux and falsification checks
-run_all.py             setup entry point; future full reproduction driver
+slides/                future English Beamer source/PDF (target 8 min 30 sec)
+tests/                 independent hand-matrix, boundary, flux and convergence checks
+run_all.py             full experiment and figure reproduction driver
 requirements.txt       direct dependencies
 requirements.lock.txt  exact installed package versions
 ```

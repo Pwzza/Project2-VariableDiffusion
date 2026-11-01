@@ -1,0 +1,35 @@
+{
+  "timestamp_utc": "2026-11-01T07:37:48.956981+00:00",
+  "quick": false,
+  "smooth_N": [
+    16,
+    32,
+    64,
+    128
+  ],
+  "layered_N": [
+    31,
+    63,
+    127,
+    255
+  ],
+  "python": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "packages": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "scikit-fem": "12.0.2"
+  },
+  "source_sha256": {
+    "__init__.py": "5ba8a25e404551e6130395a920c859f59849a0ffb805564caab6225d24c0ee3c",
+    "diagnostics.py": "26984c491647e064a64a5acf93c791c8c60e64728dd373bd128a056a65b3f494",
+    "experiments.py": "4cec7d7985db52b2873b9872fbff1b8803f3b33642b93cc3563bef3dbd2f4f73",
+    "models.py": "6c761196a51b93076d7331e265437f252c1b8efd86c336002da026b4be8f11a5",
+    "plots.py": "290c3a28535cdc59d6357552a20dcb72280bc719fce3b59c75cf48cec4b7065a",
+    "solvers.py": "02e87f8a260f64012a4276a04263183c413143c57ce584dd0a7f9073b084bd86"
+  },
+  "timing_note": "Single-run wall times; diagnostic only, not a controlled benchmark.",
+  "norm_note": "FDM L2 uses interface-aware resistance reconstruction for layered model; l2_bilinear is separate. FEM L2 is integrated P1. Nodal Linf is not continuous Linf.",
+  "total_experiment_seconds": 7.824945799991838
+}

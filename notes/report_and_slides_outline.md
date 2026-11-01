@@ -1,5 +1,7 @@
 # Report and presentation design
 
+> Historical outline. The approved presentation now emphasizes interface physics with both FDM and FEM, two experiments, analytic preliminary visuals and an 8-minute-30-second target. See [code_guide.md](code_guide.md). Final Beamer assembly remains pending.
+
 This is an outline for future final deliverables. It follows Project 1's motivation -> prediction/theory -> implementation -> evidence rhythm. Predicted behavior must remain labelled as a prediction until actual runs and audit support it. Use the previous deck's staged story structure; do not repeat its 32-slide length for a 10-minute talk.
 
 ## Report: planned 10-12 main-text pages plus appendices
