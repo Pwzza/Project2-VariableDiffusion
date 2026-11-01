@@ -2,9 +2,11 @@
 
 Current implementation: 2026-11-01. This guide supersedes the implementation-status and experiment-numbering statements in the original October design notes. Preserve those notes as pre-computation history, not as the current code specification.
 
+Presentation update: a nine-frame Madrid Beamer draft now exists in slides/main.tex, with a compiled preview in slides/main.pdf. Timing is left to the presenter. Plot regeneration also exports the exact-flux short-vector map and selected slide figures, and generates slides/results_macros.tex directly from saved results. The numerical solves are unchanged.
+
 ## Story and scope
 
-The presentation targets 8 minutes 30 seconds, strictly below 10 minutes, excluding Q&A. Its emphasis is interface physics and how FDM/FEM preserve it. There is no standalone Experiment 0: preliminary analytic visuals introduce both models and the two methods. Experiment 1 compares both methods on smooth diffusion. Experiment 2 compares both methods on the layered model, including the deliberately incorrect arithmetic FDM closure. Error diagnostics sit inside each experiment; optional cost analysis follows the method comparisons.
+The presenter manages timing. The nine-slide draft emphasizes interface physics and how FDM/FEM preserve it. There is no standalone Experiment 0: preliminary analytic visuals introduce both models and the two methods. Experiment 1 compares both methods on smooth diffusion. Experiment 2 compares both methods on the layered model, including the deliberately incorrect arithmetic FDM closure. Error diagnostics sit inside each experiment; optional cost analysis follows the method comparisons.
 
 ## Modules
 

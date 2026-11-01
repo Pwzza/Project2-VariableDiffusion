@@ -1,0 +1,259 @@
+% Draft presentation. Compile from this directory: pdflatex main.tex
+% Rebuild figure assets/macros from the repository root: python run_all.py --plots-only
+\documentclass{beamer}
+\usetheme{Madrid}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,booktabs,pgfpages}
+\graphicspath{{../figures/}}
+\input{results_macros.tex}
+% \setbeameroption{show notes on second screen=right}
+\newcommand{\q}{\mathbf q}
+\newcommand{\R}{\mathbb R}
+\title{Heat Flow Across a Material Interface}
+\subtitle{Conservative FDM and piecewise-linear FEM}
+\author{MTH321 Project 2}
+\institute{XJTLU}
+\date{November 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+  \begin{center}
+    What must a numerical method preserve when conductivity jumps?
+  \end{center}
+  \note{Introduce the physical question. The smooth benchmark establishes
+  accuracy; the layered benchmark tests how we represent the interface.
+  Author names are intentionally left for the team to supply.}
+\end{frame}
+
+\begin{frame}{Two conductivity models}
+  \[
+    -\nabla\!\cdot(a\nabla u)=f,
+    \qquad \q=-a\nabla u,
+    \qquad u=g\text{ on }\partial\Omega
+  \]
+  \vspace{-1em}
+  \begin{center}
+    \includegraphics[width=.91\linewidth]{slides_conductivity.pdf}
+  \end{center}
+  \vspace{-.6em}
+  \begin{columns}[T]
+    \begin{column}{.48\textwidth}
+      \textbf{Smooth: accuracy}\\
+      $a=1+x$, $u^*=\sin(\pi x)\sin(\pi y)$.
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \textbf{Layered: interface physics}\\
+      $a_L=1$, $a_R=10$; interface $x=1/2$.
+    \end{column}
+  \end{columns}
+  \note{The domain is the unit square. Conductivity a controls the gradient
+  required to carry heat flux. Both problems have exact solutions, so errors
+  can be measured directly. Smooth forcing is manufactured independently;
+  layered forcing is zero. Exact boundary values are imposed on all four sides.
+  The color scales differ because the conductivity ranges differ.}
+\end{frame}
+
+\begin{frame}{Heat flux and the interface conditions}
+  \begin{center}
+    \includegraphics[width=.97\linewidth]{flux_vector_field.pdf}
+  \end{center}
+  \vspace{-.8em}
+  \[
+    [u]=0,\qquad [\q\cdot\mathbf n]=0,
+    \qquad a_L\,u_x^-=a_R\,u_x^+.
+  \]
+  \centering
+  The low-conductivity material needs a steeper temperature gradient.
+  \note{These are analytic visualizations, not numerical solver results.
+  Arrows show exact flux with the same length scale in both panels; the
+  background is exact temperature. The layered flux points left because
+  temperature increases to the right. Its magnitude is constant even though
+  conductivity jumps. Perfect-contact interface conditions assume no interface
+  source or contact resistance. Here u_x changes by a factor of ten:
+  20/11 on the left and 2/11 on the right; q_x=-20/11 on both sides.}
+\end{frame}
+
+\begin{frame}{Two numerical representations}
+  \begin{center}
+    \includegraphics[width=.92\linewidth]{methods_geometry.pdf}
+  \end{center}
+  \vspace{-.7em}
+  \begin{columns}[T]
+    \begin{column}{.48\textwidth}
+      \textbf{FDM: balance shared fluxes}
+      \[
+        (A_hU)_P=\frac1{h^2}\sum_{s}a_s(U_P-U_s).
+      \]
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \textbf{FEM: satisfy weak balance}
+      \[
+        \int_\Omega a\nabla u_h\cdot\nabla v_h
+        =\int_\Omega fv_h.
+      \]
+    \end{column}
+  \end{columns}
+  \centering\small
+  Dirichlet unknowns are eliminated; both reduced systems are SPD.
+  \note{FDM shares a positive coefficient between neighboring rows, so internal
+  fluxes cancel and the reduced matrix is symmetric. FEM uses continuous P1
+  functions and zero-boundary test functions. Both have positive energy after
+  boundary elimination. The stencil arrows indicate neighbor directions, not
+  the actual flux direction. SPD is established by the energy argument and
+  corroborated numerically, not proved by a spy plot.}
+\end{frame}
+
+\begin{frame}{Smooth benchmark: second-order accuracy}
+  \begin{columns}[c]
+    \begin{column}{.68\textwidth}
+      \includegraphics[width=\linewidth]{slides_smooth_l2.pdf}
+    \end{column}
+    \begin{column}{.30\textwidth}
+      \textbf{Prediction}\\
+      $E_{L^2}\sim Ch^2$.
+      \medskip
+
+      \textbf{Fitted orders}\\
+      FDM: \FDMOrder\\
+      FEM: \FEMOrder
+    \end{column}
+  \end{columns}
+  \medskip
+  \centering
+  Four meshes; common continuous $L^2$ norm.\\
+  Algebraic and quadrature effects are below the measured error.
+  \note{For smooth coefficients, the conservative FDM truncation error is
+  second order. P1 FEM has first-order energy error and second-order L2 error
+  under regularity and duality assumptions. FDM uses bilinear reconstruction
+  and FEM uses P1 reconstruction; the same integral norm is evaluated.
+  Fits use the finest three levels and retain fit deviation in data/fits.json.
+  Residual correction estimates the algebraic error and is below 0.001 times
+  the measured error. FEM quadrature orders 6 and 8 are compared separately.
+  A small residual by itself would not establish discretization accuracy.
+  Different interpolation spaces explain different error constants; this is
+  not a universal ranking of FDM and FEM.}
+\end{frame}
+
+\begin{frame}{Representing the material interface}
+  \begin{columns}[c]
+    \begin{column}{.57\textwidth}
+      \includegraphics[width=\linewidth]{interface_resistance.pdf}
+      \[
+        a_{\rm edge}=\frac{h}{d_L/a_L+d_R/a_R}.
+      \]
+      \centering\small
+      Bisected edge: $a_H=\dfrac{2a_La_R}{a_L+a_R}$.
+    \end{column}
+    \begin{column}{.40\textwidth}
+      \textbf{Fitted FEM}
+      \medskip
+
+      The exact layered solution is continuous and linear in each material.
+      \medskip
+
+      With the interface on element edges, $u^*\in V_h$.
+      \medskip
+
+      Galerkin uniqueness gives $u_h=u^*$, up to numerical error.
+    \end{column}
+  \end{columns}
+  \medskip
+  \centering
+  Correct resistance in FDM; an exactly representable kink in FEM.
+  \note{Integrating u_x=-q_x/a along an edge gives
+  delta u=-q_x(d_L/a_L+d_R/a_R). This yields the distance-weighted resistance
+  coefficient and the harmonic mean for equal distances. Arithmetic averaging
+  stays positive and symmetric but encodes the wrong resistance. In fitted FEM,
+  correct coefficient integration and exact boundary data are also essential.
+  Exact reproduction is special to this piecewise-affine benchmark, not a
+  general assertion that fitted FEM is exact for arbitrary interface problems.}
+\end{frame}
+
+\begin{frame}{Layered benchmark: temperature and flux}
+  \begin{center}
+    \includegraphics[width=.99\linewidth]{slides_layered_result.pdf}
+  \end{center}
+  \vspace{-.6em}
+  \begin{itemize}
+    \item Resistance FDM and fitted FEM recover the exact benchmark.
+    \item Arithmetic FDM remains bounded and symmetric, yet gives wrong flux.
+  \end{itemize}
+  \small
+  $N=\ProfileN$; slices: FDM $y=\FDMSlice$, FEM $y=\FEMSlice$.
+  \note{The exact signed flux is -20/11. The exact methods overlap in these
+  plots, which is why temperature error is shown rather than full temperature.
+  Odd FDM interval counts put the interface halfway between nodes. Fitted FEM
+  inserts the interface column, so the unknown counts differ. Slice locations
+  are labelled honestly; there is no y=0.5 FDM row on an odd-N grid. Exact
+  temperature is independent of y, but the re-solved arithmetic solution need
+  not be. Four meshes are saved even though only one profile is shown.
+  Numerical flux errors here are sampled slice errors, not domain-wide norms.
+  Shared FDM face continuity is automatic; comparison with the exact flux and
+  independently reconstructed same-material side fluxes provides the checks.
+  All layered solutions stay within their boundary extrema 0 and 1. This relates
+  to the monotone sign structure on these meshes, not to accuracy.}
+\end{frame}
+
+\begin{frame}{Refinement and contrast increase solver work}
+  \begin{center}
+    Unpreconditioned CG: refining $N=\IterationCoarseN\to\IterationN$
+    \medskip
+
+    \begin{tabular}{r rr}
+      \toprule
+      Contrast $a_R/a_L$ & Resistance FDM & Fitted FEM\\
+      \midrule
+      1   & $\csname FD1Coarse\endcsname\to\csname FD1\endcsname$
+          & $\csname FE1Coarse\endcsname\to\csname FE1\endcsname$\\
+      10  & $\csname FD10Coarse\endcsname\to\csname FD10\endcsname$
+          & $\csname FE10Coarse\endcsname\to\csname FE10\endcsname$\\
+      100 & $\csname FD100Coarse\endcsname\to\csname FD100\endcsname$
+          & $\csname FE100Coarse\endcsname\to\csname FE100\endcsname$\\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \medskip
+  Same stopping rule: $\|b-AU\|_2/\|b\|_2\leq10^{-10}$.
+  \medskip
+
+  \begin{itemize}
+    \item Refinement and higher contrast increase work in the tested cases.
+    \item Correct interface physics does not remove conditioning difficulties.
+  \end{itemize}
+  \note{Both methods use a zero initial guess and no preconditioner. Boundary
+  values and exact solutions are updated consistently as contrast changes.
+  Counts depend on the matrix, RHS and mesh; they are not direct condition-number
+  measurements or wall-time rankings. The full saved table also varies N.
+  The arrows compare the same coarse and fine N for each contrast. FEM has an inserted
+  interface column and hence a different unknown count. Direct sparse solves
+  produced the preceding reference fields. Controlled cost benchmarks and AMG
+  comparisons are outside the current implementation.}
+\end{frame}
+
+\begin{frame}{What the experiments establish}
+  \begin{enumerate}
+    \item \textbf{Smooth accuracy:} both methods approach second order in $L^2$.
+    \medskip
+    \item \textbf{Interface physics:} resistance FDM and fitted FEM reproduce
+      this layered benchmark to numerical precision.
+    \medskip
+    \item \textbf{Validation:} symmetry and bounded temperature are insufficient;
+      inspect the heat flux as well.
+  \end{enumerate}
+  \medskip
+  \centering
+  Representing the material interface is part of representing the PDE.
+  \note{Close by answering the title question: preserve temperature continuity,
+  the correct resistance and normal flux. Avoid claiming that FEM is generally
+  exact or that one solver is universally faster. The measured evidence is
+  generated by run_all.py; see data/checks.json and notes/code_guide.md for
+  definitions, acceptance checks and limitations. Source: course Project 2
+  problem pack, Direction 3. Implementation and drafting used AI assistance;
+  team review and individual contribution records remain separate obligations.}
+\end{frame}
+
+\end{document}

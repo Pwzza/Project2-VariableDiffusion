@@ -32,6 +32,35 @@ def generate(root):
             axs[i,j].set(xlabel='x',ylabel='y',aspect='equal',title=f'{m.name}: {title}')
             fig.colorbar(im,ax=axs[i,j])
     save(fig,'intro_models')
+    # Sparse short arrows: direction AND length come from the exact flux.
+    # A common scale across both panels preserves magnitude comparisons.
+    qgrid=np.linspace(.04,.96,15)
+    QX,QY=np.meshgrid(qgrid,qgrid,indexing='ij')
+    models=(Model(),Model('layered'))
+    max_flux=max(np.max(np.linalg.norm(model.flux(QX,QY),axis=0)) for model in models)
+    arrow_scale=max_flux/.065  # largest arrow spans 6.5% of domain width
+    fig,axs=plt.subplots(1,2,figsize=(9,4.2),layout='constrained')
+    for ax,model in zip(axs,models):
+        im=ax.pcolormesh(X,Y,model.exact(X,Y),shading='auto',cmap='Blues',
+                         vmin=0,vmax=1,alpha=.35,rasterized=True)
+        q=model.flux(QX,QY)
+        arrows=ax.quiver(QX,QY,q[0],q[1],angles='xy',scale_units='xy',
+                         scale=arrow_scale,pivot='middle',width=.004,
+                         headwidth=3.5,headlength=4.5,color='#182b49')
+        ax.quiverkey(arrows,.78,1.06,2.,r'$|\mathbf{q}|=2$',labelpos='E',coordinates='axes')
+        if model.name=='layered': ax.axvline(.5,color='#b05a12',ls='--',lw=1.5)
+        ax.set(xlabel='x',ylabel='y',title=model.name.capitalize(),aspect='equal',xlim=(0,1),ylim=(0,1))
+    fig.colorbar(im,ax=axs,label='Exact temperature',shrink=.8)
+    # Constrained layout accommodates the shared colorbar and arrow keys.
+    for ext in ('png','pdf'):
+        fig.savefig(root/'figures'/f'flux_vector_field.{ext}',bbox_inches='tight')
+    plt.close(fig)
+    fig,axs=plt.subplots(1,2,figsize=(8,3.2))
+    for ax,model in zip(axs,models):
+        im=ax.pcolormesh(X,Y,model.a(X,Y),shading='auto',cmap='viridis',rasterized=True)
+        ax.set(title=model.name.capitalize(),xlabel='x',ylabel='y',aspect='equal')
+        fig.colorbar(im,ax=ax,label='$a$')
+    save(fig,'slides_conductivity')
     fig,axs=plt.subplots(3,1,figsize=(8,6),sharex=True)
     m=Model('layered')
     for ax,v,title in zip(axs,[m.a(x,0),m.exact(x,0),m.flux(x,0)[0]],
@@ -89,6 +118,18 @@ def generate(root):
         ax.set_xticks(h,labels=[f'1/{round(1/v)}' for v in h])
         ax.xaxis.set_minor_formatter(NullFormatter())
     save(fig,'smooth_convergence')
+    fig,ax=plt.subplots(figsize=(6.2,3.7))
+    for method in ('fdm_arithmetic','fem_fitted'):
+        rows=[r for r in smooth if r['method']==method]
+        h=np.array([r['h'] for r in rows]);e=np.array([r['l2'] for r in rows])
+        p=next(f['order'] for f in fits if f['method']==method and f['norm']=='l2')
+        ax.loglog(h,e,'o-',color=COLORS[method],label=f"{LABELS[method]}, p={p:.3f}")
+    ref=np.array([r['l2'] for r in smooth if r['method']=='fdm_arithmetic'])[0]
+    ax.loglog(h,ref*(h/h[0])**2,'k--',alpha=.5,label='$O(h^2)$ reference')
+    ax.set(xlabel='$h=1/N$',ylabel='Continuous $L^2$ error')
+    ax.set_xticks(h,labels=[f'1/{round(1/v)}' for v in h]);ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.legend(fontsize=10);ax.grid(which='both',alpha=.2)
+    save(fig,'slides_smooth_l2')
     # Same color limits for error maps, actual nodal errors.
     N=max(r['N'] for r in smooth); fig,axs=plt.subplots(1,2,figsize=(9,4))
     cases=[]
@@ -118,6 +159,37 @@ def generate(root):
     for ax,title in zip(axs,('Temperature','Signed normal flux $q_x$','Temperature error on slice')):
         ax.axvline(.5,color='gray',ls=':');ax.set(xlabel='x',title=title);ax.grid(alpha=.2)
     save(fig,'layered_profiles')
+    fig,axs=plt.subplots(1,2,figsize=(9,3.5))
+    for method in COLORS:
+        p=read(f'layered_{method}_N{N}_profile')
+        tx=np.array(p['temperature_x']);u=np.array(p['temperature'])
+        axs[0].plot(tx,u-Model('layered').exact(tx,0),'.-',color=COLORS[method],label=LABELS[method])
+        axs[1].plot(p['x'],p['q'],'.-',color=COLORS[method])
+    axs[1].axhline(-20/11,color='black',ls='--',label='Exact flux');axs[1].legend(fontsize=9)
+    axs[0].legend(fontsize=9)
+    for ax,title in zip(axs,('Temperature error','Signed flux $q_x$')):
+        ax.axvline(.5,color='gray',ls=':');ax.set(xlabel='x',title=title);ax.grid(alpha=.2)
+    save(fig,'slides_layered_result')
+    # Keep numerical slide labels synchronized with the saved result tables.
+    tex=[]
+    for method,command in (('fdm_arithmetic','FDMOrder'),('fem_fitted','FEMOrder')):
+        p=next(f['order'] for f in fits if f['method']==method and f['norm']=='l2')
+        tex.append(f'{chr(92)}newcommand{{{chr(92)}{command}}}{{{p:.4f}}}')
+    iterations=read('iterations')
+    for rho in (1,10,100):
+        for method,command in (('fdm_resistance','FD'),('fem_fitted','FE')):
+            r=next(r for r in iterations if r['contrast']==rho and r['method']==method and r['N']==max(i['N'] for i in iterations))
+            tex.append(r'\expandafter\def\csname '+command+str(rho)+r'\endcsname{'+str(r['iterations'])+'}')
+            coarse=next(r for r in iterations if r['contrast']==rho and r['method']==method and r['N']==min(i['N'] for i in iterations))
+            tex.append(r'\expandafter\def\csname '+command+str(rho)+r'Coarse\endcsname{'+str(coarse['iterations'])+'}')
+    tex.append(r'\newcommand{\ProfileN}{'+str(N)+'}')
+    tex.append(r'\newcommand{\IterationN}{'+str(max(r['N'] for r in iterations))+'}')
+    tex.append(r'\newcommand{\IterationCoarseN}{'+str(min(r['N'] for r in iterations))+'}')
+    fdm_profile=read(f'layered_fdm_resistance_N{N}_profile')
+    fem_profile=read(f'layered_fem_fitted_N{N}_profile')
+    tex.append(r'\newcommand{\FDMSlice}{'+f"{fdm_profile['slice_y']:.3f}"+'}')
+    tex.append(r'\newcommand{\FEMSlice}{'+f"{fem_profile['slice_y']:.3f}"+'}')
+    (root/'slides'/'results_macros.tex').write_text('\n'.join(tex)+'\n',encoding='utf-8')
     fig,axs=plt.subplots(1,2,figsize=(10,4))
     for method in COLORS:
         rows=[r for r in layered if r['method']==method]
