@@ -38,13 +38,17 @@ if __name__ == '__main__':
     parser.add_argument('--setup-only', action='store_true', help='run the supplied environment checks')
     parser.add_argument('--quick', action='store_true', help='four smaller meshes for development; not final evidence')
     parser.add_argument('--plots-only', action='store_true', help='regenerate figures from existing data')
+    parser.add_argument('--cost-only', action='store_true', help='benchmark saved cases and redraw figures')
     args = parser.parse_args()
     if args.setup_only:
         setup_checks()
     else:
         from diffusion.experiments import run
         from diffusion.plots import generate
-        if not args.plots_only:
+        if not args.plots_only and not args.cost_only:
             run(ROOT, quick=args.quick)
+        if not args.plots_only:
+            from diffusion.presentation_studies import benchmark
+            benchmark(ROOT)
         generate(ROOT)
         print('Done: numerical data in data/ and presentation figures in figures/.')

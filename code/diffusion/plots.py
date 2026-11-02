@@ -33,14 +33,13 @@ def generate(root):
             fig.colorbar(im,ax=axs[i,j])
     save(fig,'intro_models')
     # Sparse short arrows: direction AND length come from the exact flux.
-    # A common scale across both panels preserves magnitude comparisons.
+    # Per-panel scales keep layered arrows legible; each panel has its own key.
     qgrid=np.linspace(.04,.96,15)
     QX,QY=np.meshgrid(qgrid,qgrid,indexing='ij')
     models=(Model(),Model('layered'))
-    max_flux=max(np.max(np.linalg.norm(model.flux(QX,QY),axis=0)) for model in models)
-    arrow_scale=max_flux/.065  # largest arrow spans 6.5% of domain width
     fig,axs=plt.subplots(1,2,figsize=(9,4.2),layout='constrained')
     for ax,model in zip(axs,models):
+        arrow_scale=np.max(np.linalg.norm(model.flux(QX,QY),axis=0))/.05
         im=ax.pcolormesh(X,Y,model.exact(X,Y),shading='auto',cmap='Blues',
                          vmin=0,vmax=1,alpha=.35,rasterized=True)
         q=model.flux(QX,QY)
@@ -209,3 +208,5 @@ def generate(root):
             ax.plot([r['N'] for r in rows],[r['iterations'] for r in rows],'o-',label=f'contrast {rho:g}')
         ax.set(title=LABELS[method],xlabel='Intervals N',ylabel='Unpreconditioned CG iterations');ax.legend(fontsize=9);ax.grid(alpha=.2)
     save(fig,'contrast_iterations')
+    from .presentation_studies import figures
+    figures(root)

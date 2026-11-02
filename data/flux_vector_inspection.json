@@ -1,0 +1,23 @@
+[
+  {
+    "method": "fdm_arithmetic",
+    "N": 31,
+    "min_magnitude": 1.8260513150233622,
+    "max_magnitude": 1.967930436302956,
+    "max_abs_qy": 0.10473360384660113
+  },
+  {
+    "method": "fdm_resistance",
+    "N": 31,
+    "min_magnitude": 1.8181818181817297,
+    "max_magnitude": 1.8181818181819538,
+    "max_abs_qy": 1.4066575065246296e-13
+  },
+  {
+    "method": "fem_fitted",
+    "N": 31,
+    "min_magnitude": 1.8181818181814435,
+    "max_magnitude": 1.8181818181820475,
+    "max_abs_qy": 4.973799150320701e-13
+  }
+]

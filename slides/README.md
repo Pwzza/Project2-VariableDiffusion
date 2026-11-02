@@ -1,6 +1,6 @@
 # Beamer draft
 
-main.tex is the selective nine-slide English draft. It retains Madrid, the default Beamer aspect ratio and frame numbers from the supplied example. Timing is intentionally absent. Author names can be supplied by the team in the preamble; no previous-project role assignments are copied.
+main.tex is the expanded 29-slide English draft. It retains Madrid, the default Beamer aspect ratio and frame numbers from the supplied example. Timing is intentionally absent. Author names can be supplied by the team in the preamble. previous_draft.tex preserves the earlier nine-slide source.
 
 From NumericalPDE, regenerate slide assets and data-linked labels:
 
@@ -8,7 +8,7 @@ From NumericalPDE, regenerate slide assets and data-linked labels:
 .\.venv\Scripts\python.exe run_all.py --plots-only
 ```
 
-This requires existing numerical results. Run without --plots-only to recompute them first. The vector map is an analytic illustration of exact q=-a grad u with short arrows, a common magnitude scale and an exact-temperature background. Numerical result figures are separately labelled.
+This requires existing numerical results. Run without --plots-only to recompute them first. The introductory vector map uses separately keyed scales and an exact-temperature background. The numerical layered vector map uses one common, slightly enlarged arrow scale with no color-error legend; arrows are not normalized. Separate layered temperature-error maps share a signed-error color scale. Statistics are saved in data/flux_vector_inspection.json. The timing protocol and numerical-precision interpretation are in slide text rather than figure headlines. See figure_notes.md for the plot-to-text audit.
 
 Compile from this slides directory:
 

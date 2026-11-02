@@ -4,16 +4,12 @@
 
 The proposed story is: **Can a computed temperature field be accurate, physically conservative, and affordable?** Verify smooth accuracy first; expose wrong interface physics next; then compare solver cost only after algebraic error is controlled.
 
-The numerical code now implements **both conservative FDM and two-dimensional P1 FEM**, four-mesh smooth/interface experiments, diagnostics, and reproducible presentation figures. The final report and Beamer slides are not assembled yet.
+The numerical code implements **both conservative FDM and two-dimensional P1 FEM**, four-mesh smooth/interface experiments, diagnostics, cost studies, and reproducible presentation figures. The expanded Beamer presentation is available in `slides/main.tex` and `slides/main.pdf`; the final report remains pending.
 
-**Start with [the current code guide](notes/code_guide.md).** The October planning documents linked below preserve the original design; their standalone sanity/error/cost experiment numbering and FDM-only emphasis have been superseded by the approved two-model, two-method presentation plan.
+**Start with [the current code guide](notes/code_guide.md).** Local agent state and superseded planning drafts are excluded from tracking; the reproducibility instructions, numerical evidence, provenance and course audit remain versioned.
 
-- [Experiment design and theory](notes/experiment_plan.md)
-- [Problem definition and conventions](notes/problem_definition.md)
-- [Code implementation specification](notes/implementation_plan.md)
-- [Report and presentation story](notes/report_and_slides_outline.md)
-- [Course requirements mapped to evidence](notes/requirements_matrix.md)
-- [Environment evidence](notes/evidence/environment_check.txt)
+- [Presentation and build instructions](slides/README.md)
+- [Generated numerical evidence](notes/evidence/numerical_results.md)
 - [Prediction and AI audit records](notes/audit_and_predictions.md)
 
 ## Environment
@@ -48,7 +44,7 @@ data/                  generated tables, fields, profiles, checks and metadata
 figures/               generated publication figures
 notes/                 design, derivations, predictions, audit and evidence
 report/                future LaTeX report and PDF (at least 8 pages)
-slides/                future English Beamer source/PDF (target 8 min 30 sec)
+slides/                English Beamer source, generated macros and compiled PDF
 tests/                 independent hand-matrix, boundary, flux and convergence checks
 run_all.py             full experiment and figure reproduction driver
 requirements.txt       direct dependencies

@@ -17,3 +17,40 @@ Thumbs.db
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+
+# Local AI-agent instructions, state, sessions and scratch work
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.agent/
+.codex/
+.claude/
+.cursor/
+tmp/
+scratch/
+
+# Local planning drafts; retain reproducibility, provenance and course audit docs
+/notes/*.md
+!/notes/code_guide.md
+!/notes/audit_and_predictions.md
+/notes/evidence/*.txt
+/slides/figure_notes.md
+/slides/previous_draft.tex
+
+# Generated LaTeX intermediates (keep main.tex, result macros and final PDF)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.vrb
+
+# Credentials and local security material
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+credentials.json
+secrets.json
