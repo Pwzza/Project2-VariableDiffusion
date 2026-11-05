@@ -6,12 +6,6 @@ from skfem import Basis, ElementTriP1
 
 
 def fdm_l2(s, values, exact=True, interface_aware=True, order=4):
-    """Integral L2 of piecewise bilinear reconstruction, split at interface.
-
-    Resistance reconstruction uses accumulated resistance as the x coordinate
-    on crossing cells. Ordinary bilinear reconstruction is also reported.
-    For correction fields exact=False integrates the field itself.
-    """
     z, w = leggauss(order); z=(z+1)/2; w=w/2
     total=0.
     y0=s.y[:-1][None,:]; dy=np.diff(s.y)[None,:]
@@ -52,8 +46,6 @@ def physical_errors(s, values=None, exact=True):
 
 def metrics(s):
     u=s.u.ravel()[s.free]; r=s.b-s.A@u
-    # One residual-correction solve estimates error to the exact discrete solve.
-    # This is a numerical cross-check, not a certified roundoff bound.
     correction=np.zeros_like(s.u)
     correction.ravel()[s.free]=spsolve(s.A,r)
     alg=physical_errors(s,correction,exact=False)['l2']
@@ -85,7 +77,6 @@ def metrics(s):
 
 
 def flux_profile(s):
-    """x flux along actual central grid row / interior horizontal FEM slice."""
     if s.basis is None:
         j=s.N//2
         q=-s.ax[:,j]*np.diff(s.u[:,j])*s.N
@@ -94,7 +85,7 @@ def flux_profile(s):
         right=np.flatnonzero(s.x[:-1]>=.5)[0]
         return dict(x=mid,q=q,temperature_x=s.x,temperature=s.u[:,j],
                     slice_y=float(s.y[j]),q_left=float(q[left]),q_right=float(q[right]))
-    # Evaluate gradients in elements intersected by a non-grid-line slice.
+
     x=np.sort(np.r_[np.linspace(.001,.499,160),np.linspace(.501,.999,160)])
     yy=np.full_like(x,.5+.173/s.N)
     elements=s.basis.mesh.element_finder()(x,yy)

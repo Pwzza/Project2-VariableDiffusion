@@ -1,15 +1,63 @@
-"""One-command numerical experiments and presentation figure reproduction."""
 from pathlib import Path
 import argparse
 import contextlib
 import importlib
 import io
 import platform
-import runpy
 import sys
+import os
+import subprocess
 
 ROOT = Path(__file__).resolve().parent
+
+
+def bootstrap_environment():
+    
+    if sys.prefix != sys.base_prefix:
+        return
+
+    venv_dir = ROOT / ".venv"
+    if os.name == "nt":  # Windows
+        python_exe = venv_dir / "Scripts" / "python.exe"
+        pip_exe = venv_dir / "Scripts" / "pip.exe"
+    else:                # macOS / Linux
+        python_exe = venv_dir / "bin" / "python"
+        pip_exe = venv_dir / "bin" / "pip"
+
+    if not venv_dir.exists():
+        print("Setting up virtual environment...")
+        import venv
+        venv.create(venv_dir, with_pip=True)
+
+    req_file = ROOT / "requirements.lock.txt"
+    if not req_file.exists():
+        req_file = ROOT / "requirements.txt"
+
+    if req_file.exists():
+        print(f"Installing dependencies from {req_file.name}...")
+        subprocess.check_call([str(pip_exe), "install", "--upgrade", "pip", "-q"])
+        subprocess.check_call([str(pip_exe), "install", "-r", str(req_file)])
+    else:
+        print("Warning: No requirements file found.")
+
+    print("Environment ready. Restarting script inside the virtual environment...\n")
+    os.execv(str(python_exe), [str(python_exe)] + sys.argv)
+
+bootstrap_environment()
 sys.path.insert(0, str(ROOT / 'code'))
+
+
+def run_script(path):
+    path = Path(path)
+    old_path = sys.path.copy()
+    sys.path.insert(0, str(path.parent))
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            code = compile(f.read(), str(path), 'exec')
+        namespace = {'__name__': '__main__', '__file__': str(path)}
+        exec(code, namespace)
+    finally:
+        sys.path[:] = old_path
 
 
 def setup_checks():
@@ -23,7 +71,7 @@ def setup_checks():
             print(f'{name}: {module.__version__}')
         for filename in ('poisson_fd_setup_check.py', 'test_problem_bank.py'):
             print(f'\nCourse check: {filename}')
-            runpy.run_path(str(ROOT / 'code' / 'course_checks' / filename), run_name='__main__')
+            run_script(ROOT / 'code' / 'course_checks' / filename)
         print('\nBank result: 0 failures (supplied self-check returned without assertion failure).')
         print('Setup checks: PASS. This does not verify the future variable-diffusion solver.')
     output = log.getvalue()
@@ -40,6 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--plots-only', action='store_true', help='regenerate figures from existing data')
     parser.add_argument('--cost-only', action='store_true', help='benchmark saved cases and redraw figures')
     args = parser.parse_args()
+    
     if args.setup_only:
         setup_checks()
     else:

@@ -1,7 +1,3 @@
-"""Independent checks of assembly, nonzero boundaries, flux and convergence.
-
-Run: .venv/Scripts/python.exe -m unittest discover -s tests -v
-"""
 from pathlib import Path
 import sys
 import unittest
@@ -13,13 +9,11 @@ from diffusion.solvers import assemble_fdm, assemble_fem, face_coefficient, solv
 from diffusion.diagnostics import metrics, physical_errors, flux_profile
 from diffusion.experiments import independent_forcing_check
 
-
 class NumericalChecks(unittest.TestCase):
     def test_constant_coefficient_hand_matrix_both_methods(self):
         expected=np.array([[4,-1,-1,0],[-1,4,0,-1],[-1,0,4,-1],[0,-1,-1,4]])
         fd=assemble_fdm(Model('layered',1),3,'resistance')
-        # FEM with rho=1 still inserts the interface, so use the ordinary
-        # smooth mesh but a test-only constant coefficient model.
+        # FEM with rho=1 to smooth the mesh 
         class Constant(Model):
             def a(self,x,y):
                 return np.ones(np.broadcast_shapes(np.shape(x),np.shape(y)))
@@ -32,8 +26,9 @@ class NumericalChecks(unittest.TestCase):
 
     def test_hand_fdm_row(self):
         s=assemble_fdm(Model(),4)
-        # Point (.25,.25): shared x-face coefficients 1.125,1.375,
-        # y-face coefficients 1.25,1.25; h^-2=16.
+        # Point (0.25,0.25): shared x face coefficients 1.125,1.375,
+        # y face coefficients 1.25,1.25;
+        # h^-2=16
         self.assertAlmostEqual(s.A[0,0],80.)
         self.assertAlmostEqual(s.A[0,3],-22.)
         self.assertAlmostEqual(s.A[0,1],-20.)

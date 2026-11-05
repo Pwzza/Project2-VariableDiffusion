@@ -1,35 +1,10 @@
-"""Environment sanity check for the BVP stack (NOT a coding task).
-
-Distributed as-is: no TODOs to fill.  It verifies that the sparse
-assembly + spsolve path used across Project 2 works on your machine
-BEFORE you start the Lecture 3 coding lab, and prints the algebraic
-residual that the Environment Setup addendum asks you to record.
-
-Run:
-    python poisson_fd_setup_check.py
-
-Expected output (n = 15):
-    algebraic residual ||b - A u_h||_inf = ~1e-14   (near machine precision)
-    centre u_h(0.5, 0.5) = ~1.003                    (PROBLEM = P1 sanity value)
-
-This solves -Delta u = 2 pi^2 sin(pi x) sin(pi y) with zero Dirichlet
-data, whose exact solution is u* = sin(pi x) sin(pi y) (u*(0.5, 0.5) = 1).
-The same five-point matrix, RHS convention, and PROBLEM = P1 case appear
-in poisson_fd_skeleton.py --- running this script proves that code path
-works before you add your assembly to the scaffold.
-"""
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import spsolve
 
 
 def assemble_poisson(n):
-    """Five-point -Delta on (0, 1)^2, zero Dirichlet, b = f at interior nodes.
 
-    Mirrors poisson_fd_skeleton.py: k = i*n + j with meshgrid indexing='ij'
-    (axis 0 is x), f = 2 pi^2 sin(pi x) sin(pi y) so u* = sin(pi x) sin(pi y)
-    vanishes on the whole boundary and b = f needs no boundary-value shift.
-    """
     h = 1.0 / (n + 1)
     grid = np.arange(1, n + 1) * h
     X, Y = np.meshgrid(grid, grid, indexing="ij")
@@ -56,7 +31,7 @@ if __name__ == "__main__":
     A, b, h = assemble_poisson(n)
     uh = spsolve(A, b)
     residual = np.linalg.norm(b - A @ uh, np.inf)
-    mid = n // 2  # x = y = 0.5 is grid index (n-1)/2 for odd n
+    mid = n // 2
     centre = uh[mid * n + mid]
     print(f"n = {n}: algebraic residual ||b - A u_h||_inf = {residual:.3e}")
     print(f"centre u_h(0.5, 0.5) = {centre:.4f}  (expect ~1.003, u* = 1)")

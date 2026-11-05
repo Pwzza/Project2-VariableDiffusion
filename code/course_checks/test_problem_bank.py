@@ -1,18 +1,3 @@
-"""Analytic test-problem bank for Project 2 (student-facing).
-
-Every entry states the PDE, an exact solution, the forcing, the boundary
-data, and the asymptotic rate a correct five-point FDM should approach in
-the discrete L^2 norm (h * ||.||_2) with the indicated boundary treatment.
-
-The bank is verification infrastructure, not a topic list: manufacture a
-problem, prove the code, then trust it on the team's real problem.
-
-The examples used in class are imported from here by the scaffolding:
-P1 (zero Dirichlet, RHS = f) is the Lecture 3 coding-lab example; P5
-(non-zero Dirichlet, boundary values moved across) is the Tutorial 5
-individual-challenge example. Switch PROBLEM in poisson_fd_skeleton.py
-to pick which one the scaffold solves.
-"""
 import numpy as np
 
 
@@ -25,7 +10,6 @@ def _one_plus_x(x, y):
 
 
 class Problem:
-    """One manufactured test problem on the unit square."""
 
     def __init__(self, name, exact, forcing, boundary, expected_rate, note,
                  coefficient=_one):
@@ -142,8 +126,6 @@ BANK = [P1, P2, P3, P4, P5]
 
 
 def verify_bank(n=400, tol=2e-3):
-    """Guard against typos: check forcing = -div(a grad u) by finite
-    differences, using the conservative flux form on half-points."""
     h = 1.0 / (n - 1)
     axis = np.linspace(0.0, 1.0, n)
     X, Y = np.meshgrid(axis, axis, indexing="ij")
