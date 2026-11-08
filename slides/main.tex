@@ -341,38 +341,58 @@ Refinement reduces the arithmetic error. Exact representations already reach
 numerical precision; added work does not give a comparable reduction.
 \end{frame}
 
-\begin{frame}{Conclusions}
-\begin{enumerate}
-\item Both methods approach second-order smooth $L^2$ accuracy.
-\medskip
-\item Correct interface resistance or a fitted approximation space reproduces
-      this layered benchmark; symmetry alone is insufficient.
-\medskip
-\item Flux diagnostics expose errors that temperature plots can hide.
-\medskip
-\item Refinement and contrast increase work; accuracy gains depend on what
-      error remains to be reduced.
-\end{enumerate}
-\end{frame}
-
-\begin{frame}{Coverage and remaining scope}
+\begin{frame}{Conclusions and task coverage}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{.38\linewidth}>{\raggedright\arraybackslash}p{.55\linewidth}}\toprule
-Problem-pack task & Evidence and presentation emphasis\\\midrule
-Assembly, symmetry, SPD & Derivations shown; matrix/eigenvalue diagnostics saved\\[.5em]
-Smooth errors and verification & Both norms shown; full residual tables and forcing checks summarized\\[.5em]
-Interface and normal flux & Central comparison; side-flux mismatch values in saved tables\\[.5em]
-Boundary extrema & Checked and explained through matrix signs\\[.5em]
-Refinement and contrast & Iteration comparison shown; cost study added\\\bottomrule
+\begin{tabular}{>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}p{.66\linewidth}}\toprule
+Task / comparison & Work completed and main finding\\\midrule
+1. Assembly and SPD & \textbf{Complete; partially presented.} Conservative assembly, Dirichlet elimination and matrix checks.\\[.2em]
+2. Smooth verification & \textbf{Completed and reported.} Both methods approach second-order $L^2$ accuracy; both error norms compared.\\[.2em]
+3. Interface comparison & \textbf{Completed and reported.} Resistance FDM and fitted FEM reproduce the exact solution.\\[.2em]
+4. Boundary extrema & Bounds checked: $0\leq U\leq1$. Boundedness alone does not establish accuracy.\\[.2em]
+5. Solver work & \textbf{Completed and reported.} Refinement and contrast increase CG counts at a matched residual tolerance.\\\midrule
+(Optional) FDM--FEM & \textbf{Completed.} Both models compared at matched mesh scale using common error measures.\\[.2em]
+(Optional) cost--accuracy & \textbf{Completed.} Assembly plus direct-solve cost compared with solution and flux errors.\\\bottomrule
 \end{tabular}
-\medskip
+\smallskip
 
-\textbf{Not studied:} unresolved FEM, curved interfaces, contact resistance,
-AMG comparisons, or rigorous floating-point error bounds.
-\note{These extensions are not all required tasks. FDM versus FEM is the depth
-comparison. Source: Project 2 problem pack, Direction 3 and depth directions.
-Code, data and figures are reproducible through run_all.py. AI assistance is
-recorded in notes/audit_and_predictions.md; human review and individual contribution
-records remain team responsibilities.}
+\footnotesize\textbf{Not developed here / open question:}
+Why do the matrix signs keep the layered solution within its boundary extrema?
+\note{Audit against the five bullets in Direction 3, problem_pack.pdf, pp. 6--7.
+Exact requirements:
+1. Write the conservative FDM face-flux stencil or FEM weak form and state exactly
+how coefficients and Dirichlet data are assembled. Report the relative symmetry
+defect and assess positive definiteness. Primary evidence is the derivation after
+Dirichlet elimination with positive shared face coefficients. Sparse Cholesky or
+a smallest-eigenvalue estimate with eigsh is acceptable numerical corroboration;
+random Rayleigh quotients are not proofs.
+2. Give four-mesh smooth L2 and Linfinity error tables, fitted asymptotic orders,
+and algebraic residuals. Confirm manufactured forcing independently before testing.
+3. For the layered model, compare arithmetic and harmonic/resistance FDM, OR fitted
+FEM with an explicitly documented unresolved-interface treatment. Plot u and the
+numerical normal flux across x=1/2, and quantify solution error and flux jump.
+4. Show that the layered solution stays between its boundary extrema and relate
+this to the matrix sign pattern, without treating boundedness as accuracy evidence.
+5. Compare conditioning OR iterative counts under refinement AND increasing
+contrast, with comparable residual tolerances.
+
+Completion labels describe the numerical work and the main findings reported in
+the presentation; they do not claim that every report table or proof is displayed.
+Assembly is presented, but the full SPD energy/graph argument, symmetry-defect
+values and eigenvalue estimates are not displayed. Smooth error/order plots are
+presented, while full error/residual tables and the forcing-check result remain
+in saved diagnostics. Layered solution error and signed normal-flux profiles are
+presented, while a direct numerical u profile and side-flux jump values are omitted.
+The FDM alternative is used for task 3, so unresolved FEM is not additionally required.
+Boundary bounds and matrix signs are stated, with no extrema table or derivation
+of the DMP. Positive diagonal and nonpositive off-diagonal alone are insufficient;
+the connected conservative stencil with positive weights and Dirichlet anchoring
+supplies the missing argument. FEM needs mesh conditions in addition to SPD.
+The expanded CG sweep addresses task 5; no condition-number
+estimates or explanation of the iteration trend are required for this alternative.
+Saved diagnostics must not be counted as presented evidence. The FDM--FEM depth
+comparison also calls for separate DOF, nnz, assembly and solve data, which these
+slides do not display in full. Code and data remain available through run_all.py.
+AI assistance is recorded in notes/audit_and_predictions.md; human review and
+individual contribution records remain team responsibilities.}
 \end{frame}
 \end{document}

@@ -1,6 +1,6 @@
 # Beamer draft
 
-main.tex is the expanded 29-slide English draft. It retains Madrid, the default Beamer aspect ratio and frame numbers from the supplied example. Timing is intentionally absent. Author names can be supplied by the team in the preamble. previous_draft.tex preserves the earlier nine-slide source.
+main.tex is the expanded 28-slide English draft, ending with a combined conclusion and task-coverage table. It retains Madrid, the default Beamer aspect ratio and frame numbers from the supplied example. Timing is intentionally absent. Author names can be supplied by the team in the preamble. previous_draft.tex preserves the earlier nine-slide source.
 
 From NumericalPDE, regenerate slide assets and data-linked labels:
 
