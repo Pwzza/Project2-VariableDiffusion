@@ -78,8 +78,12 @@ def generate(root):
     ax.set(title='FDM: shared face fluxes',aspect='equal');ax.axis('off')
     from skfem import MeshTri
     mesh=MeshTri.init_tensor(np.array([0,.25,.5,.75,1]),np.linspace(0,1,5))
-    axs[1].triplot(mesh.p[0],mesh.p[1],mesh.t.T,color=COLORS['fem_fitted'])
-    axs[1].axvline(.5,lw=3,color='black');axs[1].set(title='FEM: interface-fitted triangles',aspect='equal',xlabel='x',ylabel='y')
+    axs[1].remove()
+    ax=fig.add_subplot(122,projection='3d')
+    phi=np.zeros(mesh.p.shape[1]);phi[np.argmin(np.sum((mesh.p-.5)**2,axis=0))]=1.
+    ax.plot_trisurf(mesh.p[0],mesh.p[1],phi,triangles=mesh.t.T,
+                    color=COLORS['fem_fitted'],edgecolor='white',linewidth=.5,alpha=.9)
+    ax.set(xlabel='x',ylabel='y',zlabel=r'$\phi_i$',title='FEM: P1 nodal basis')
     save(fig,'methods_geometry')
     fig=plt.figure(figsize=(6,4));ax=fig.add_subplot(111,projection='3d')
     phi=np.zeros(mesh.p.shape[1]);phi[np.argmin(np.sum((mesh.p-.5)**2,axis=0))]=1.
@@ -200,13 +204,21 @@ def generate(root):
         ax.set_xticks(h,labels=[f'1/{round(1/v)}' for v in h])
         ax.xaxis.set_minor_formatter(NullFormatter())
     save(fig,'layered_errors')
-    fig,axs=plt.subplots(1,2,figsize=(9,4))
+    fig,axs=plt.subplots(1,2,figsize=(9,4),sharex=True,sharey=True)
     iterations=read('iterations')
     for ax,method in zip(axs,('fdm_resistance','fem_fitted')):
-        for rho in (1.,10.,100.):
+        contrasts=sorted(set(r['contrast'] for r in iterations))
+        cmap=plt.get_cmap('Blues' if method=='fdm_resistance' else 'Purples')
+        shades=cmap(np.linspace(.45,.92,len(contrasts)))
+        marker,line=('s','--') if method=='fdm_resistance' else ('x',':')
+        for rho,shade in zip(contrasts,shades):
             rows=[r for r in iterations if r['method']==method and r['contrast']==rho]
-            ax.plot([r['N'] for r in rows],[r['iterations'] for r in rows],'o-',label=f'contrast {rho:g}')
-        ax.set(title=LABELS[method],xlabel='Intervals N',ylabel='Unpreconditioned CG iterations');ax.legend(fontsize=9);ax.grid(alpha=.2)
+            ax.loglog([r['N'] for r in rows],[r['iterations'] for r in rows],marker=marker,linestyle=line,
+                      color=shade,linewidth=1.7,markersize=4.5,markerfacecolor='white',label=f'contrast {rho:g}')
+        ns=sorted(set(r['N'] for r in iterations))
+        ax.set_xticks(ns,labels=[str(n) for n in ns]);ax.xaxis.set_minor_formatter(NullFormatter())
+        ax.set(title=LABELS[method],xlabel='Intervals N');ax.legend(fontsize=9,frameon=False);ax.grid(alpha=.15,which='both')
+    axs[0].set_ylabel('Unpreconditioned CG iterations')
     save(fig,'contrast_iterations')
     from .presentation_studies import figures
     figures(root)

@@ -50,10 +50,11 @@ We impose $g=u^*$ on \textbf{all four boundary sides}.
 \begin{frame}{Two numerical representations}
 \pic[.88]{methods_geometry.pdf}
 \textbf{FDM}: balance fluxes shared by neighboring nodes.\\
-\textbf{FEM}: approximate temperature by continuous affine functions on triangles.
+\textbf{FEM}: combine nodal hat functions, $u_h=\sum_i U_i\phi_i$.
 \medskip
 
-\small Left arrows indicate stencil directions. The black line on the right is the fitted material interface.
+\small Left arrows indicate stencil directions. The P1 basis function on the
+right is one at its own node, zero at the other nodes, and linear on each triangle.
 \end{frame}
 
 \begin{frame}{FDM: coefficients and boundary assembly}
@@ -292,23 +293,16 @@ Bounded temperature does \emph{not} prove accuracy: arithmetic FDM passes that c
 \end{frame}
 
 \begin{frame}{Refinement and contrast increase solver work}
-\centering Unpreconditioned CG: refining $N=\IterationCoarseN\to\IterationN$
-\medskip
+\pic[.87]{contrast_iterations.pdf}
+\small Unpreconditioned CG: vary mesh resolution $N$ and contrast $a_R/a_L$.
+Blue: resistance FDM; purple: fitted FEM. Darker shades mean higher contrast;
+both axes are logarithmic.
 
-\begin{tabular}{r rr}\toprule
-Contrast & Resistance FDM & Fitted FEM\\\midrule
-1 & $\csname FD1Coarse\endcsname\to\csname FD1\endcsname$ & $\csname FE1Coarse\endcsname\to\csname FE1\endcsname$\\
-10 & $\csname FD10Coarse\endcsname\to\csname FD10\endcsname$ & $\csname FE10Coarse\endcsname\to\csname FE10\endcsname$\\
-100 & $\csname FD100Coarse\endcsname\to\csname FD100\endcsname$ & $\csname FE100Coarse\endcsname\to\csname FE100\endcsname$\\\bottomrule
-\end{tabular}
-\medskip
-
-\raggedright Entries are iteration counts, with zero initial guess and
+Plotted values are iteration counts, with zero initial guess and
 $\|b-AU\|_2/\|b\|_2\leq10^{-10}$ in every case.
-\medskip
-
-Counts show increasing difficulty in the tested cases; they are not
-condition-number estimates or wall-time rankings.
+Counts show increasing difficulty in the tested cases.
+\par\smallskip
+{\centering\normalsize\textbf{Why?}\par}
 \end{frame}
 
 \begin{frame}{Cost versus accuracy: what is measured?}

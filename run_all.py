@@ -39,15 +39,19 @@ if __name__ == '__main__':
     parser.add_argument('--quick', action='store_true', help='four smaller meshes for development; not final evidence')
     parser.add_argument('--plots-only', action='store_true', help='regenerate figures from existing data')
     parser.add_argument('--cost-only', action='store_true', help='benchmark saved cases and redraw figures')
+    parser.add_argument('--iterations-only', action='store_true', help='run the expanded CG sweep and redraw figures')
     args = parser.parse_args()
     if args.setup_only:
         setup_checks()
     else:
         from diffusion.experiments import run
         from diffusion.plots import generate
-        if not args.plots_only and not args.cost_only:
+        if args.iterations_only:
+            from diffusion.iteration_study import run as iteration_study
+            iteration_study(ROOT,quick=args.quick)
+        elif not args.plots_only and not args.cost_only:
             run(ROOT, quick=args.quick)
-        if not args.plots_only:
+        if not args.plots_only and not args.iterations_only:
             from diffusion.presentation_studies import benchmark
             benchmark(ROOT)
         generate(ROOT)

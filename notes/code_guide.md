@@ -2,6 +2,8 @@
 
 Current implementation: 2026-11-01. This guide supersedes the implementation-status and experiment-numbering statements in the original October design notes. Preserve those notes as pre-computation history, not as the current code specification.
 
+CG study update (2026-11-08): full mode now uses N=15,31,63,127 and contrasts 1,3,10,30,100 for both methods (40 cases). Run `python run_all.py --iterations-only` to update this study and its plots without rerunning the other experiments. The recomputed final residual must be at most 1e-10; CG requests 9e-11 to allow a small margin. Every row saves termination status, unknown count and nodal maximum error. The two-panel logarithmic plot keeps resistance FDM blue and fitted FEM purple, distinguishing contrasts with markers/line styles. The slide presents the observations and leaves “Why?” open. Original iteration-study settings below describe the earlier implementation.
+
 Presentation update: a nine-frame Madrid Beamer draft now exists in slides/main.tex, with a compiled preview in slides/main.pdf. Timing is left to the presenter. Plot regeneration also exports the exact-flux short-vector map and selected slide figures, and generates slides/results_macros.tex directly from saved results. The numerical solves are unchanged.
 
 ## Story and scope

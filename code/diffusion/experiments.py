@@ -9,7 +9,7 @@ from importlib.metadata import version
 from time import perf_counter
 import numpy as np
 from scipy.sparse import save_npz
-from scipy.sparse.linalg import cg, eigsh
+from scipy.sparse.linalg import eigsh
 from .models import Model
 from .solvers import assemble_fdm, assemble_fem, solve
 from .diagnostics import metrics, physical_errors, flux_profile
@@ -98,22 +98,8 @@ def run(root, quick=False):
             s=assemble()
             eigenvalue=float(eigsh(s.A,k=1,which='SA',return_eigenvectors=False,tol=1e-9)[0])
             checks['smallest_eigenvalues'].append(dict(model=model.name,method=s.method,N=15,value=eigenvalue))
-    iterations=[]
-    for rho in (1.,10.,100.):
-        for N in (7,15,31) if quick else (15,31,63):
-            for assemble in (lambda:assemble_fdm(Model('layered',rho),N,'resistance'),
-                             lambda:assemble_fem(Model('layered',rho),N)):
-                s=assemble(); counter=[0]
-                def callback(x): counter[0]+=1
-                t=perf_counter()
-                u,info=cg(s.A,s.b,rtol=1e-10,atol=0.,maxiter=20000,callback=callback)
-                elapsed=perf_counter()-t
-                residual=float(np.linalg.norm(s.b-s.A@u)/np.linalg.norm(s.b))
-                if info!=0 or residual>1.1e-10:
-                    raise AssertionError(f'CG did not attain target: info={info}, residual={residual}')
-                iterations.append(dict(method=s.method,N=N,h=1/N,contrast=rho,
-                                       iterations=counter[0],rtol=1e-10,residual_rel2=residual,
-                                       seconds=elapsed,preconditioner='none',initial_guess='zero'))
+    from .iteration_study import run as iteration_study
+    iterations=iteration_study(root,quick=quick)
     fits=add_orders(smooth)
     checks['acceptance']={
         'smooth_l2_orders':all(1.8<f['order']<2.2 for f in fits if f['norm']=='l2'),
