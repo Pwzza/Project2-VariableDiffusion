@@ -39,6 +39,10 @@ scratch/
 /slides/figure_notes.md
 /slides/previous_draft.tex
 
+# Local rehearsal scripts, PDFs and script-building helpers
+/slides/*script*
+/slides/build_*.py
+
 # Generated LaTeX intermediates (keep main.tex, result macros and final PDF)
 *.bbl
 *.blg
