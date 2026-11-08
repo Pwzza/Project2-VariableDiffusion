@@ -1,8 +1,3 @@
-"""Headless presentation figures, regenerated exclusively from saved results.
-
-Analytic introduction/method diagrams are mathematical illustrations; numerical
-result plots read data/*.json and *.npz. All assets export PDF and PNG.
-"""
 import json
 import numpy as np
 import matplotlib
@@ -32,8 +27,7 @@ def generate(root):
             axs[i,j].set(xlabel='x',ylabel='y',aspect='equal',title=f'{m.name}: {title}')
             fig.colorbar(im,ax=axs[i,j])
     save(fig,'intro_models')
-    # Sparse short arrows: direction AND length come from the exact flux.
-    # Per-panel scales keep layered arrows legible; each panel has its own key.
+
     qgrid=np.linspace(.04,.96,15)
     QX,QY=np.meshgrid(qgrid,qgrid,indexing='ij')
     models=(Model(),Model('layered'))
@@ -50,7 +44,7 @@ def generate(root):
         if model.name=='layered': ax.axvline(.5,color='#b05a12',ls='--',lw=1.5)
         ax.set(xlabel='x',ylabel='y',title=model.name.capitalize(),aspect='equal',xlim=(0,1),ylim=(0,1))
     fig.colorbar(im,ax=axs,label='Exact temperature',shrink=.8)
-    # Constrained layout accommodates the shared colorbar and arrow keys.
+
     for ext in ('png','pdf'):
         fig.savefig(root/'figures'/f'flux_vector_field.{ext}',bbox_inches='tight')
     plt.close(fig)
@@ -66,7 +60,7 @@ def generate(root):
                           ['Conductivity $a$','Temperature $u^*$','Flux $q_x^*$']):
         ax.plot(x,v,lw=2);ax.axvline(.5,color='gray',ls=':');ax.set_ylabel(title)
     axs[-1].set_xlabel('x');save(fig,'intro_interface')
-    # Explicit methodology diagrams requested for the presentation.
+
     fig,axs=plt.subplots(1,2,figsize=(9,4))
     ax=axs[0]
     for t in (-1,0,1):
@@ -133,7 +127,7 @@ def generate(root):
     ax.set_xticks(h,labels=[f'1/{round(1/v)}' for v in h]);ax.xaxis.set_minor_formatter(NullFormatter())
     ax.legend(fontsize=10);ax.grid(which='both',alpha=.2)
     save(fig,'slides_smooth_l2')
-    # Same color limits for error maps, actual nodal errors.
+
     N=max(r['N'] for r in smooth); fig,axs=plt.subplots(1,2,figsize=(9,4))
     cases=[]
     for method in ('fdm_arithmetic','fem_fitted'):
@@ -173,7 +167,7 @@ def generate(root):
     for ax,title in zip(axs,('Temperature error','Signed flux $q_x$')):
         ax.axvline(.5,color='gray',ls=':');ax.set(xlabel='x',title=title);ax.grid(alpha=.2)
     save(fig,'slides_layered_result')
-    # Keep numerical slide labels synchronized with the saved result tables.
+
     tex=[]
     for method,command in (('fdm_arithmetic','FDMOrder'),('fem_fitted','FEMOrder')):
         p=next(f['order'] for f in fits if f['method']==method and f['norm']=='l2')

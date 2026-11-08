@@ -1,4 +1,3 @@
-"""Expanded presentation evidence; numerical cost excludes diagnostics and plots."""
 import json
 import numpy as np
 from .models import Model
@@ -10,11 +9,6 @@ STYLES={'fdm_arithmetic':dict(color='#d07919',marker='o',linestyle='-'),
 LABELS={'fdm_arithmetic':'FDM arithmetic','fdm_resistance':'FDM resistance','fem_fitted':'FEM fitted'}
 
 def benchmark(root):
-    """Warm up each case, then record three assembly+direct-solve repetitions.
-
-    Accuracy comes from the full verified run, matched by model/method/N.
-    Comparison is of these implementations, not intrinsic method complexity.
-    """
     rows=[]
     for model_name in ('smooth','layered'):
         cases=json.loads((root/'data'/f'{model_name}.json').read_text())
@@ -66,7 +60,7 @@ def figures(root):
         ax.set_xticks(hs,labels=[f'1/{round(1/h)}' for h in hs])
         ax.xaxis.set_minor_formatter(NullFormatter())
     save(fig,'layered_convergence')
-    # Signed nodal temperature errors, one honest shared color scale.
+
     import matplotlib.tri as mtri
     error_fields=[]
     for method in STYLES:
@@ -92,8 +86,8 @@ def figures(root):
     fig.colorbar(im,ax=axs,label='$u_h-u^*$',shrink=.8)
     for ext in ('png','pdf'):fig.savefig(root/'figures'/f'layered_error_maps.{ext}',bbox_inches='tight',dpi=190)
     plt.close(fig)
-    # Actual numerical q fields. FDM interpolates shared face fluxes;
-    # FEM samples the elementwise gradient. The common scale preserves magnitude.
+    # Actual numerical q fields, FDM interpolates shared face fluxes
+    # FEM samples the elementwise gradient, the common scale preserves magnitude
     xx,yy=np.meshgrid(np.linspace(.06,.94,10),np.linspace(.06,.94,10),indexing='ij')
     points=np.array([xx.ravel(),yy.ravel()]);fig,axs=plt.subplots(1,3,figsize=(12,4))
     vector_stats=[]
@@ -111,7 +105,6 @@ def figures(root):
         magnitude=np.linalg.norm(q,axis=0)
         vector_stats.append(dict(method=method,N=N,min_magnitude=float(magnitude.min()),
                                  max_magnitude=float(magnitude.max()),max_abs_qy=float(abs(q[1]).max())))
-        # Enlarge all arrows by the same factor: do not exaggerate one method.
         ax.quiver(*points,*q,angles='xy',scale_units='xy',scale=25,pivot='middle',color=style['color'],width=.004)
         ax.axvline(.5,ls=':',color='.5');ax.set(xlim=(0,1),ylim=(0,1),aspect='equal',xlabel='x',ylabel='y',title=LABELS[method])
     save(fig,'layered_numerical_flux_vectors')

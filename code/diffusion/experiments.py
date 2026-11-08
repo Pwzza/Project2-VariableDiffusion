@@ -1,4 +1,3 @@
-"""Reproducible experiments; machine-readable data precedes plotting."""
 import csv
 import hashlib
 import json
@@ -38,7 +37,7 @@ def add_orders(rows):
         for norm in ('l2','nodal_linf','energy'):
             valid=[r for r in group if norm in r]
             if len(valid)<2: continue
-            # Exclude roundoff-level errors from fitting; do not invent a slope.
+            # Exclude roundoff-level errors from fitting
             for prev,current in zip(valid[:-1],valid[1:]):
                 if min(prev[norm],current[norm])>1e-11:
                     current[norm+'_pair_order']=float(np.log(prev[norm]/current[norm])/np.log(prev['h']/current['h']))
@@ -53,7 +52,7 @@ def add_orders(rows):
 
 
 def independent_forcing_check():
-    """Differentiate analytic FLUX numerically, not the supplied forcing formula."""
+    """Differentiate analytic FLUX numerically"""
     m=Model(); x=np.linspace(.08,.92,13); y=np.linspace(.09,.91,13)
     x,y=np.meshgrid(x,y,indexing='ij'); d=1e-5
     divergence=((m.flux(x+d,y)[0]-m.flux(x-d,y)[0])+
@@ -84,14 +83,14 @@ def run(root, quick=False):
                     save_npz(root/'data'/f'{model.name}_{s.method}_matrix.npz',s.A)
                 print(f"{model.name:7} {s.method:15} N={N:3} L2={row['l2']:.4e} "
                       f"max={row['nodal_linf']:.3e}",flush=True)
-    # Quantify quadrature sensitivity and residual correction on finest smooth mesh.
+
     N=smooth_N[-1]
     base=solve(assemble_fem(Model(),N,6)); high=solve(assemble_fem(Model(),N,8))
     delta=physical_errors(base,high.u-base.u,exact=False)['l2']
     fem_error=[r['l2'] for r in smooth if r['method']=='fem_fitted' and r['N']==N][0]
     checks['quadrature']=dict(N=N,orders=[6,8],solution_difference_l2=delta,
                               difference_to_discretization_ratio=delta/fem_error)
-    # Positive-definiteness numerical corroboration on a small representative mesh.
+
     checks['smallest_eigenvalues']=[]
     for model in (Model(),Model('layered')):
         for assemble in (lambda:assemble_fdm(model,15,'resistance'),lambda:assemble_fem(model,15)):

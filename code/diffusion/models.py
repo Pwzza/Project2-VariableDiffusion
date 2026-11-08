@@ -1,4 +1,3 @@
-"""Exact benchmarks. Coordinates may be scalars or broadcastable arrays."""
 from dataclasses import dataclass
 import numpy as np
 

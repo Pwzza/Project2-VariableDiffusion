@@ -1,8 +1,3 @@
-"""Sparse assembly with strong Dirichlet elimination (no identity row edits).
-
-FDM indexing: grid U[i,j]=u(x[i],y[j]), interior k=(i-1)*(N-1)+(j-1).
-FEM follows the course fem2d_scikitfem_skeleton, extended to variable a and g.
-"""
 from dataclasses import dataclass
 from time import perf_counter
 import numpy as np
@@ -43,7 +38,7 @@ def face_coefficient(model, x0, x1, y0, y1, averaging):
         raise ValueError('Unknown face averaging')
     if model.name == 'smooth':
         return (a0+a1)/2
-    # Exact resistance fraction, also handles an interface at a node.
+    # Exact resistance fraction also handles an interface at a node
     if x1 == x0:
         return model.a(x0, (y0+y1)/2)
     left_fraction = np.clip((.5-x0)/(x1-x0), 0., 1.)
@@ -89,7 +84,7 @@ def assemble_fem(model, N, quadrature=6):
     start = perf_counter()
     x = np.linspace(0, 1, N+1)
     if model.name == 'layered':
-        x = np.unique(np.r_[x, .5])  # split the straddling macro-column
+        x = np.unique(np.r_[x, .5])
     y = np.linspace(0, 1, N+1)
     mesh = MeshTri.init_tensor(x, y)
     basis = Basis(mesh, ElementTriP1(), intorder=quadrature)
