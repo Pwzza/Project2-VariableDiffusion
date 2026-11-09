@@ -1,0 +1,21 @@
+
+
+Problem-pack task - Evidence and presentation emphasis (DONE!!)
+
+
+
+
+Assembly, symmetry, SPD - Derivations shown; matrix/eigenvalue diagnostics saved DONE
+
+
+Smooth errors and verification - Both norms shown; full residual tables and forcing checks summarized DONE
+
+Interface and normal flux - Central comparison; side-flux mismatch  values in saved tables (DONE)
+
+Boundary extrema - Checked and explained through matrix signs (DONE)
+
+
+Refinement and contrast - Iteration comparison shown; cost study added (COMPLETED)
+
+
+havent done as of November 1 unresolved FEM, curved interfaces, contact resistance, AMG comparisons, or rigorous floating-point error bounds.
